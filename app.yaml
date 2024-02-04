@@ -1,0 +1,19 @@
+runtime: nodejs18
+env_variables:
+  JWT_ACCESS_EXPIRATION_MINUTES: 43200
+  JWT_REFRESH_EXPIRATION_DAYS: 30
+  JWT_RESET_PASSWORD_EXPIRATION_MINUTES: 30
+  JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: 20160
+  JWT_SECRET: 'aut0m4g1cXn91N33R1N9'
+  DATABASE_URL: 'postgres://jnxtgocx:3uWxBmTCONWUxkR4G3sYE9ElKW8Wq4bv@otto.db.elephantsql.com/jnxtgocx'
+  NODE_ENV: 'staging'
+  MODE: 'production'
+  NAME: 'ONTHEJOB'
+  SMTP_TTL: true
+  STMP_TYPE: 'OAuth2'
+  SMTP_PORT: '465'
+  SMTP_USERNAME: 'resend'
+  SMTP_PASSWORD: 're_XRZXZCYh_2DQ6be32UBoJ5m3vY3Uidd7R'
+  EMAIL_FROM: 'noreply@onthejob.ng'
+  SMTP_HOST: 'smtp.resend.com'
+  BASE_URL: 'https://onthejob.web.app'

@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String     @id @default(uuid())
+  email            String     @unique
+  firstName        String
+  lastName         String
+  phone            String?    @default("")
+  uid              String?
+  password         String?
+  gender           Gender
+  homeAddress      String?
+  stateOfResidence String?
+  lgaOfResidence   String?
+  username         String?
+  role             Role       @default(MENTEE)
+  status           UserStatus @default(PENDING)
+  photo            String?
+  dateOfBirth      DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @default(now()) @updatedAt
+  business         Business?
+  mentee           Mentee?
+  mentor           Mentor?
+  Token            Token[]
+}
+
+model Mentor {
+  id                     String                 @id @default(uuid())
+  bio                    String?
+  userId                 String                 @unique
+  mentee                 Mentee[]
+  user                   User                   @relation(fields: [userId], references: [id])
+  tags                   TopicTags[]
+  mentorshipPath         MentorshipPath[]       @relation("MentorToMentorshipPath")
+  skills                 Skills[]               @relation("MentorToSkills")
+  modeOfCommunication    String?
+  communicationURl       String?
+  completedMatch         Boolean                @default(false)
+  countOfAssignedMentees Int                    @default(0)
+  MentorshipAssignment   MentorshipAssignment[]
+}
+
+model Mentee {
+  id                   String                 @id @default(uuid())
+  mentorId             String?
+  interningAtId        String?
+  userId               String                 @unique
+  interningAt          Business?              @relation(fields: [interningAtId], references: [id])
+  mentor               Mentor?                @relation(fields: [mentorId], references: [id])
+  user                 User                   @relation(fields: [userId], references: [id])
+  areaOfInterest       MentorshipPath[]       @relation("MenteeToMentorshipPath")
+  skills               Skills[]               @relation("MenteeToSkills")
+  experience           Experience
+  MentorshipAssignment MentorshipAssignment[]
+}
+
+model Business {
+  id           String           @id @default(uuid())
+  userId       String           @unique
+  user         User             @relation(fields: [userId], references: [id])
+  interns      Mentee[]
+  tracks       InternTracks[]   @relation("BusinessToInternTracks")
+  hiringSector MentorshipPath[] @relation("BusinessToMentorshipPath")
+}
+
+model MentorshipAssignment {
+  id                 String           @id @default(uuid())
+  mentorId           String
+  mentor             Mentor           @relation(fields: [mentorId], references: [id])
+  menteeId           String
+  mentee             Mentee           @relation(fields: [menteeId], references: [id])
+  dateOfAssignment   DateTime         @default(now())
+  dateOfRejection    DateTime?
+  dateOfAcceptance   DateTime?
+  status             AssignmemtStatus @default(PENDING)
+  completeMentorship Boolean          @default(false)
+}
+
+model MentorshipPath {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now()) @updatedAt
+  business  Business[] @relation("BusinessToMentorshipPath")
+  mentee    Mentee[]   @relation("MenteeToMentorshipPath")
+  mentor    Mentor[]   @relation("MentorToMentorshipPath")
+}
+
+model Skills {
+  id        String   @id @default(uuid())
+  skill     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  mentee    Mentee[] @relation("MenteeToSkills")
+  mentor    Mentor[] @relation("MentorToSkills")
+}
+
+model InternTracks {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  business  Business[] @relation("BusinessToInternTracks")
+}
+
+model TopicTags {
+  id        String   @id @default(uuid())
+  tag       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  mentorId  String
+  Mentor    Mentor   @relation(fields: [mentorId], references: [id])
+}
+
+model PreferredHours {
+  id     String     @id @default(uuid())
+  day    Day
+  time   String
+  period TimePeriod
+}
+
+model Token {
+  id          String    @id @default(uuid())
+  token       String
+  type        TokenType
+  expires     DateTime
+  blacklisted Boolean
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  DISABLED
+  REJECTED
+}
+
+enum AssignmemtStatus {
+  PENDING
+  INITIAL_ALLOCATION
+  MENTOR_ACCEPTED
+  MENTOR_REJECTED
+}
+
+enum Role {
+  MENTEE
+  MENTOR
+  BUSINESS
+  ADMIN
+  SUPER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  RESET_PASSWORD
+  VERIFY_EMAIL
+  OTP
+}
+
+enum Experience {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum TimePeriod {
+  AM
+  PM
+}
